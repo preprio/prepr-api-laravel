@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'base_url' => env('PREPR_URL', 'https://api.tom.graphlr.de'),
+    'base_url' => env('PREPR_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     'headers' => [
         'Accept' => 'application/json',
         'Content-Type' => 'application/json',
-        'Authorization' => env('PREPR_TOKEN', ''),
+        'Authorization' => env('PREPR_TOKEN'),
     ]
 
 ];

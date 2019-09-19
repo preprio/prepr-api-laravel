@@ -12,7 +12,7 @@ class PreprServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/config.php' => config_path('prepr.php'),
+            __DIR__.'/config.php' => config_path('prepr.php'),
         ], 'config');
     }
 
@@ -22,7 +22,7 @@ class PreprServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'prepr');
+        $this->mergeConfigFrom(__DIR__.'/config.php', 'prepr');
         // Register the main class to use with the facade
         $this->app->singleton('prepr', function () {
             return new Prepr;
