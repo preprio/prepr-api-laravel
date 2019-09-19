@@ -16,3 +16,25 @@ composer require graphlr/prepr-api-laravel
 PREPR_URL=
 PREPR_TOKEN=
 ```
+
+#### Usage
+
+```text
+use Graphlr\Prepr\Prepr;
+
+new Prepr()
+```
+
+```text
+app('prepr')
+```
+
+```text
+$data = app('prepr')
+    ->query([
+        'fields' => 'source_file'
+    ])
+    ->url('assets')
+    ->method('GET')
+    ->call();
+```
