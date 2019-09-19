@@ -15,7 +15,6 @@ class Prepr
     public function __construct()
     {
         $this->client = new Client([
-//            'base_uri' => config('prepr.base_url'),
             'http_errors' => false,
             'headers' => config('prepr.headers')
         ]);
