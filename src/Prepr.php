@@ -16,55 +16,50 @@ class Prepr
     {
         $this->client = new Client([
             'http_errors' => false,
-            'headers' => config('prepr.headers')
+            'headers' => array_merge(
+                config('prepr.headers'),
+                [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => config('prepr.token')
+                ]
+            )
         ]);
 
         $this->baseUrl = config('prepr.base_url');
     }
 
-    protected function call()
+    public function call()
     {
         $request = $this->client->request($this->method, $this->callableUrl.$this->query, [
             'form_params' => $this->params,
         ]);
 
-        return json_decode($request
-            ->getBody()
-            ->getContents(), true);
+        return json_decode($request->getBody()->getContents(), true);
     }
 
-    protected function setGetUrl($url = null)
+    public function url($url = null)
     {
-        $this->method = 'GET';
         $this->callableUrl = $this->baseUrl.$url;
 
         return $this;
     }
 
-    public function setPostUrl($url)
+    public function method($method = null)
     {
-        $this->method = 'POST';
-        $this->callableUrl = $this->baseUrl.$url;
+        $this->method = $method;
 
         return $this;
     }
 
-    public function setDeleteUrl($url)
-    {
-        $this->method = 'DELETE';
-        $this->callableUrl = $this->baseUrl.$url;
-
-        return $this;
-    }
-
-    protected function addQuery(array $array)
+    public function query(array $array)
     {
         $this->query = '?'.http_build_query($array);
 
         return $this;
     }
 
-    protected function setParams(array $array)
+    public function params(array $array)
     {
         $this->params = $array;
 
