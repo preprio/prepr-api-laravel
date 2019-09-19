@@ -18,5 +18,15 @@
         "psr-4": {
             "Graphlr\\Prepr\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Graphlr\\Prepr\\PreprServiceProvider"
+            ],
+            "aliases": {
+                "Prepr": "Graphlr\\Prepr\\PreprFacade"
+            }
+        }
     }
 }
