@@ -32,16 +32,44 @@ class Prepr
         $this->baseUrl = config('prepr.base_url');
     }
 
-    public function call()
+    protected function request()
     {
         $this->request = $this->client->request($this->method, $this->callableUrl.$this->query, [
             'form_params' => $this->params,
         ]);
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
-        $this->rawResponse = $this->request->getBody()->getContents());
+        $this->rawResponse = $this->request->getBody()->getContents();
 
         return $this;
+    }
+
+    public function get()
+    {
+        $this->method = 'get';
+
+        return $this->request();
+    }
+
+    public function post()
+    {
+        $this->method = 'post';
+
+        return $this->request();
+    }
+
+    public function put()
+    {
+        $this->method = 'put';
+
+        return $this->request();
+    }
+
+    public function delete()
+    {
+        $this->method = 'delete';
+
+        return $this->request();
     }
 
     public function url($url = null)
