@@ -8,7 +8,6 @@ class Prepr
 {
     protected $baseUrl;
     protected $path;
-    protected $pathParams = [];
     protected $query;
     protected $method = 'GET';
     protected $params = [];
@@ -36,10 +35,6 @@ class Prepr
     protected function request()
     {
         $url = $this->baseUrl.$this->path;
-
-        foreach($this->pathParams as $key => $value) {
-            $url = str_replace('{' . $key . '}', $value, $url);
-        }
 
         $this->request = $this->client->request($this->method, $url.$this->query, [
             'form_params' => $this->params,
@@ -79,16 +74,13 @@ class Prepr
         return $this->request();
     }
 
-    public function path($path = null)
+    public function path($path = null, array $array)
     {
+        foreach($array as $key => $value) {
+            $this->path = str_replace('{' . $key . '}', $value, $this->path);
+        }
+
         $this->path = $path;
-
-        return $this;
-    }
-
-    public function pathParams(array $array)
-    {
-        $this->pathParams = $array;
 
         return $this;
     }
