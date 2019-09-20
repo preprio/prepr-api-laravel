@@ -24,11 +24,29 @@ PREPR_TOKEN=
 use Graphlr/Prepr/Prepr;
 ```
 
-##### Get
+##### Get All
 
 ```text
 $apiRequest = (new Prepr)
-    ->endpoint('tags')
+    ->path('tags')
+    ->query([
+        'fields' => 'example'
+    ])
+    ->get();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
+##### Get One
+
+```text
+$apiRequest = (new Prepr)
+    ->path('tags/{id}')
+    ->pathParams([
+        'id' => 1
+    ]),
     ->query([
         'fields' => 'example'
     ])
@@ -43,7 +61,7 @@ if($apiRequest->getStatusCode() == 200) {
 
 ```text
 $apiRequest = (new Prepr)
-    ->endpoint('tags')
+    ->path('tags')
     ->params([
         'body' => 'Example'
     ])
