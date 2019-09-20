@@ -35,7 +35,7 @@ class Prepr
 
     protected function request()
     {
-        $url = $this->baseUrl.$this->endpoint;
+        $url = $this->baseUrl.$this->path;
 
         foreach($this->pathParams as $key => $value) {
             $url = str_replace('{' . $key . '}', $value, $url);
