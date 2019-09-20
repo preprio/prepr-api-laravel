@@ -7,10 +7,12 @@ use GuzzleHttp\Client;
 class Prepr
 {
     protected $url;
-    protected $query;
     protected $callableUrl;
+    protected $query;
     protected $method = 'GET';
     protected $params = [];
+    protected $response;
+    protected $rawResponse;
     protected $request;
 
     public function __construct()
@@ -35,6 +37,9 @@ class Prepr
         $this->request = $this->client->request($this->method, $this->callableUrl.$this->query, [
             'form_params' => $this->params,
         ]);
+
+        $this->response = json_decode($this->request->getBody()->getContents(), true);
+        $this->rawResponse = $this->request->getBody()->getContents());
 
         return $this;
     }
@@ -69,12 +74,12 @@ class Prepr
 
     public function getResponse()
     {
-        return json_decode($this->request->getBody()->getContents(), true);
+        return $this->response;
     }
 
     public function getRawResponse()
     {
-        return $this->request->getBody()->getContents();
+        return $this->rawResponse;
     }
 
     public function getStatusCode()
