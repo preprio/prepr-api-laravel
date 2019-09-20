@@ -7,7 +7,8 @@ use GuzzleHttp\Client;
 class Prepr
 {
     protected $baseUrl;
-    protected $endpoint;
+    protected $path;
+    protected $pathParams = [];
     protected $query;
     protected $method = 'GET';
     protected $params = [];
@@ -34,7 +35,13 @@ class Prepr
 
     protected function request()
     {
-        $this->request = $this->client->request($this->method, $this->baseUrl.$this->endpoint.$this->query, [
+        $url = $this->baseUrl.$this->endpoint;
+
+        foreach($this->pathParams as $key => $value) {
+            $url = str_replace('{' . $key . '}', $value, $url);
+        }
+
+        $this->request = $this->client->request($this->method, $url.$this->query, [
             'form_params' => $this->params,
         ]);
 
@@ -72,9 +79,16 @@ class Prepr
         return $this->request();
     }
 
-    public function endpoint($endpoint = null)
+    public function path($path = null)
     {
-        $this->endpoint = $endpoint;
+        $this->path = $path;
+
+        return $this;
+    }
+
+    public function pathParams(array $array)
+    {
+        $this->pathParams = $array;
 
         return $this;
     }
