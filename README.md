@@ -17,24 +17,41 @@ PREPR_URL=
 PREPR_TOKEN=
 ```
 
-#### Usage
+#### Examples
+
 
 ```text
-use Graphlr\Prepr\Prepr;
-
-new Prepr()
+use Graphlr/Prepr/Prepr;
 ```
 
-```text
-app('prepr')
-```
+##### Get
 
 ```text
-$data = app('prepr')
+$apiRequest = (new Prepr)
+    ->method('get')
+    ->url('tags')
     ->query([
-        'fields' => 'source_file'
+        'fields' => 'example'
     ])
-    ->url('assets')
-    ->method('GET')
     ->call();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
+##### Post
+
+```text
+$apiRequest = (new Prepr)
+    ->method('post')
+    ->url('tags')
+    ->params([
+        'body' => 'Example'
+    ])
+    ->call();
+
+if($apiRequest->getStatusCode() == 201) {
+    dump($apiRequest->getResponse());
+}
 ```
