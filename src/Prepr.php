@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 class Prepr
 {
-    protected $url;
+    protected $baseUrl;
     protected $callableUrl;
     protected $query;
     protected $method = 'GET';
