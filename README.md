@@ -55,3 +55,7 @@ if($apiRequest->getStatusCode() == 201) {
     dump($apiRequest->getResponse());
 }
 ```
+
+#### Debug
+
+For debug you can use `getRawResponse()`
