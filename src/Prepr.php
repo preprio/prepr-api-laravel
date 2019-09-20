@@ -36,7 +36,7 @@ class Prepr
             'form_params' => $this->params,
         ]);
 
-        return $this->request;
+        return $this;
     }
 
     public function url($url = null)
