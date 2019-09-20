@@ -11,6 +11,7 @@ class Prepr
     protected $callableUrl;
     protected $method = 'GET';
     protected $params = [];
+    protected $request;
 
     public function __construct()
     {
@@ -31,11 +32,11 @@ class Prepr
 
     public function call()
     {
-        $request = $this->client->request($this->method, $this->callableUrl.$this->query, [
+        $this->request = $this->client->request($this->method, $this->callableUrl.$this->query, [
             'form_params' => $this->params,
         ]);
 
-        return json_decode($request->getBody()->getContents(), true);
+        return $this->request;
     }
 
     public function url($url = null)
@@ -64,5 +65,20 @@ class Prepr
         $this->params = $array;
 
         return $this;
+    }
+
+    public function getResponse()
+    {
+        return json_decode($this->request->getBody()->getContents(), true);
+    }
+
+    public function getRawResponse()
+    {
+        return $this->request->getBody()->getContents();
+    }
+
+    public function getStatusCode()
+    {
+        return $this->request->getStatusCode();
     }
 }
