@@ -43,8 +43,7 @@ if($apiRequest->getStatusCode() == 200) {
 
 ```text
 $apiRequest = (new Prepr)
-    ->path('tags/{id}')
-    ->pathParams([
+    ->path('tags/{id}',[
         'id' => 1
     ]),
     ->query([
