@@ -77,7 +77,7 @@ class Prepr
     public function path($path = null, array $array = [])
     {
         foreach($array as $key => $value) {
-            $this->path = str_replace('{' . $key . '}', $value, $this->path);
+            $path = str_replace('{' . $key . '}', $value, $path);
         }
 
         $this->path = $path;
