@@ -9,7 +9,7 @@ class Prepr
     protected $baseUrl;
     protected $path;
     protected $query;
-    protected $method = 'GET';
+    protected $method;
     protected $params = [];
     protected $response;
     protected $rawResponse;
