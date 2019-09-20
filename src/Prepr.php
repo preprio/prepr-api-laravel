@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 class Prepr
 {
     protected $baseUrl;
-    protected $callableUrl;
+    protected $endpoint;
     protected $query;
     protected $method = 'GET';
     protected $params = [];
@@ -34,7 +34,7 @@ class Prepr
 
     protected function request()
     {
-        $this->request = $this->client->request($this->method, $this->callableUrl.$this->query, [
+        $this->request = $this->client->request($this->method, $this->baseUrl.$this->endpoint.$this->query, [
             'form_params' => $this->params,
         ]);
 
@@ -72,9 +72,9 @@ class Prepr
         return $this->request();
     }
 
-    public function url($url = null)
+    public function endpoint($endpoint = null)
     {
-        $this->callableUrl = $this->baseUrl.$url;
+        $this->endpoint = $endpoint;
 
         return $this;
     }

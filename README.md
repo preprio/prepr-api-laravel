@@ -28,12 +28,11 @@ use Graphlr/Prepr/Prepr;
 
 ```text
 $apiRequest = (new Prepr)
-    ->method('get')
-    ->url('tags')
+    ->endpoint('tags')
     ->query([
         'fields' => 'example'
     ])
-    ->call();
+    ->get();
 
 if($apiRequest->getStatusCode() == 200) {
     dump($apiRequest->getResponse());
@@ -44,12 +43,11 @@ if($apiRequest->getStatusCode() == 200) {
 
 ```text
 $apiRequest = (new Prepr)
-    ->method('post')
-    ->url('tags')
+    ->endpoint('tags')
     ->params([
         'body' => 'Example'
     ])
-    ->call();
+    ->post();
 
 if($apiRequest->getStatusCode() == 201) {
     dump($apiRequest->getResponse());
