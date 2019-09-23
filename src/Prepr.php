@@ -14,6 +14,7 @@ class Prepr
     protected $response;
     protected $rawResponse;
     protected $request;
+    protected $authorization;
 
     public function __construct()
     {
@@ -24,12 +25,13 @@ class Prepr
                 [
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'Authorization' => config('prepr.token')
+                    'Authorization' => $this->authorization
                 ]
             )
         ]);
 
         $this->baseUrl = config('prepr.base_url');
+        $this->authorization = config('prepr.token');
     }
 
     protected function request()
@@ -42,6 +44,12 @@ class Prepr
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
+
+        return $this;
+    }
+
+    public function url($url) {
+        $this->baseUrl = $url;
 
         return $this;
     }

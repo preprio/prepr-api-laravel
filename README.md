@@ -21,7 +21,7 @@ PREPR_TOKEN=
 
 
 ```text
-use Graphlr/Prepr/Prepr;
+use Graphlr\Prepr\Prepr;
 ```
 
 ##### Get All
