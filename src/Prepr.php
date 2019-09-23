@@ -53,7 +53,7 @@ class Prepr
         return $this;
     }
 
-    public function Authorization($authorization)
+    public function authorization($authorization)
     {
         $this->authorization = $authorization;
 
