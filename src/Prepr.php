@@ -18,7 +18,13 @@ class Prepr
 
     public function __construct()
     {
-        $this->client = new Client([
+        $this->baseUrl = config('prepr.base_url');
+        $this->authorization = config('prepr.token');
+    }
+
+    protected function client()
+    {
+        return new Client([
             'http_errors' => false,
             'headers' => array_merge(
                 config('prepr.headers'),
@@ -29,13 +35,12 @@ class Prepr
                 ]
             )
         ]);
-
-        $this->baseUrl = config('prepr.base_url');
-        $this->authorization = config('prepr.token');
     }
 
     protected function request()
     {
+        $this->client = $this->client();
+
         $url = $this->baseUrl.$this->path;
 
         $this->request = $this->client->request($this->method, $url.$this->query, [
@@ -44,6 +49,13 @@ class Prepr
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
+
+        return $this;
+    }
+
+    public function Authorization($authorization)
+    {
+        $this->authorization = $authorization;
 
         return $this;
     }
