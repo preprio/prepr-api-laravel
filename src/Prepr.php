@@ -18,7 +18,7 @@ class Prepr
 
     public function __construct()
     {
-        $this->baseUrl = config('prepr.base_url');
+        $this->baseUrl = config('prepr.url');
         $this->authorization = config('prepr.token');
     }
 

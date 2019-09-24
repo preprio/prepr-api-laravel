@@ -17,16 +17,26 @@ PREPR_URL=
 PREPR_TOKEN=
 ```
 
+#### Override variables
+
+For all the requests
+```php
+config(['prepr.url' => 'url']);
+config(['prepr.token' => 'token']);
+```
+
+If you want only have other variable for one request you can you `->url('url')->authorization('token')`
+
+
 #### Examples
 
-
-```text
+```php
 use Graphlr\Prepr\Prepr;
 ```
 
 ##### Get All
 
-```text
+```php
 $apiRequest = (new Prepr)
     ->path('tags')
     ->query([
@@ -41,7 +51,7 @@ if($apiRequest->getStatusCode() == 200) {
 
 ##### Get One
 
-```text
+```php
 $apiRequest = (new Prepr)
     ->path('tags/{id}',[
         'id' => 1
@@ -58,7 +68,7 @@ if($apiRequest->getStatusCode() == 200) {
 
 ##### Post
 
-```text
+```php
 $apiRequest = (new Prepr)
     ->path('tags')
     ->params([
