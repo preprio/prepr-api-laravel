@@ -25,7 +25,7 @@ config(['prepr.url' => 'url']);
 config(['prepr.token' => 'token']);
 ```
 
-If you want only have other variable for one request you can you `->url('url')->authorization('token')`
+If you want only have other variable for one request you can add `->url('url')->authorization('token')`
 
 
 #### Examples
