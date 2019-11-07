@@ -37,15 +37,19 @@ class Prepr
         ]);
     }
 
-    protected function request()
+    protected function request($options = [])
     {
+        if(!$options) {
+            $options = [
+                'form_params' => $this->params
+            ];
+        }
+
         $this->client = $this->client();
 
         $url = $this->baseUrl.$this->path;
 
-        $this->request = $this->client->request($this->method, $url.$this->query, [
-            'form_params' => $this->params,
-        ]);
+        $this->request = $this->client->request($this->method, $url.$this->query, $options);
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
@@ -92,6 +96,26 @@ class Prepr
         $this->method = 'delete';
 
         return $this->request();
+    }
+
+    public function upload()
+    {
+        $this->method = 'post';
+
+        $multipart = [];
+
+        foreach ($this->params as $key => $value) {
+            $multipart[] = [
+                'name' => $key,
+                'contents' => $value
+            ];
+        }
+ 
+        $options = [
+            'multipart' => $multipart
+        ];
+
+        return $this->request($options);
     }
 
     public function path($path = null, array $array = [])
