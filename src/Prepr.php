@@ -39,17 +39,14 @@ class Prepr
 
     protected function request($options = [])
     {
-        if(!$options) {
-            $options = [
-                'form_params' => $this->params
-            ];
-        }
-
         $this->client = $this->client();
 
         $url = $this->baseUrl.$this->path;
 
-        $this->request = $this->client->request($this->method, $url.$this->query, $options);
+        $this->request = $this->client->request($this->method, $url.$this->query, [
+//            'form_params' => $this->params
+            'multipart' => $this->nestedArrayToMultipart($this->params)
+        ]);
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
@@ -98,26 +95,6 @@ class Prepr
         return $this->request();
     }
 
-    public function upload()
-    {
-        $this->method = 'post';
-
-        $multipart = [];
-
-        foreach ($this->params as $key => $value) {
-            $multipart[] = [
-                'name' => $key,
-                'contents' => $value
-            ];
-        }
- 
-        $options = [
-            'multipart' => $multipart
-        ];
-
-        return $this->request($options);
-    }
-
     public function path($path = null, array $array = [])
     {
         foreach($array as $key => $value) {
@@ -163,5 +140,33 @@ class Prepr
     public function getStatusCode()
     {
         return $this->request->getStatusCode();
+    }
+
+    public function nestedArrayToMultipart($array)
+    {
+        $multipart = [];
+
+        foreach ($array as $key => $value) {
+
+            if(!is_array($value)){
+                $multipart[] = [
+                    'name' => $key,
+                    'contents' => $value
+                ];
+
+                continue;
+            }
+
+            foreach($value as $multiKey => $multiValue) {
+                $multiName = $key . '[' .$multiKey . ']' . (is_array($multiValue) ? '[' . key($multiValue) . ']' : '' ) . '';
+
+                $multipart[] = [
+                    'name' => $multiName,
+                    'contents' => (is_array($multiValue) ? reset($multiValue) : $multiValue)
+                ];
+            }
+        }
+
+        return $multipart;
     }
 }
