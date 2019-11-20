@@ -13,16 +13,16 @@ composer require graphlr/prepr-api-laravel
 #### Environment variables
 
 ```text
-PREPR_URL=
-PREPR_TOKEN=
+PREPR_URL=https://api.eu1.prepr.io/
+PREPR_TOKEN=ToKeN
 ```
 
 #### Override variables
 
 For all the requests
 ```php
-config(['prepr.url' => 'url']);
-config(['prepr.token' => 'token']);
+config(['prepr.url' => 'https://api.eu1.prepr.io/']);
+config(['prepr.token' => 'ToKeN']);
 ```
 
 If you want only have other variable for one request you can add `->url('url')->authorization('token')`
