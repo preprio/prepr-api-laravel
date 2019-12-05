@@ -25,7 +25,7 @@ config(['prepr.url' => 'https://api.eu1.prepr.io/']);
 config(['prepr.token' => 'ToKeN']);
 ```
 
-If you want only have other variable for one request you can add `->url('url')->authorization('token')`
+The authorization can also be set for one specific request `->url('url')->authorization('token')`.
 
 
 #### Examples
@@ -49,7 +49,7 @@ if($apiRequest->getStatusCode() == 200) {
 }
 ```
 
-##### Get One
+##### Get Single
 
 ```php
 $apiRequest = (new Prepr)
@@ -78,6 +78,35 @@ $apiRequest = (new Prepr)
 
 if($apiRequest->getStatusCode() == 201) {
     dump($apiRequest->getResponse());
+}
+```
+
+##### Put
+
+```php
+$apiRequest = (new Prepr)
+    ->path('tags')
+    ->params([
+        'body' => 'Example'
+    ])
+    ->put();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
+##### Delete
+
+```php
+$apiRequest = (new Prepr)
+    ->path('tags/{id}',[
+        'id' => 1
+    ]),
+    ->delete();
+
+if($apiRequest->getStatusCode() == 204) {
+    // Deleted.
 }
 ```
 
