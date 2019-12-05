@@ -44,7 +44,6 @@ class Prepr
         $url = $this->baseUrl.$this->path;
 
         $this->request = $this->client->request($this->method, $url.$this->query, [
-//            'form_params' => $this->params
             'multipart' => $this->nestedArrayToMultipart($this->params)
         ]);
 
