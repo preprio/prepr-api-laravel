@@ -42,10 +42,18 @@ class Prepr
         $this->client = $this->client();
 
         $url = $this->baseUrl.$this->path;
-
-        $this->request = $this->client->request($this->method, $url.$this->query, [
-            'multipart' => $this->nestedArrayToMultipart($this->params)
-        ]);
+        
+        $data = [
+            'form_params' => $this->params
+        ];
+        
+        if($this->method == 'post') {
+            $data = [
+                'multipart' => $this->nestedArrayToMultipart($this->params)
+            ];
+        }
+            
+        $this->request = $this->client->request($this->method, $url.$this->query,$data);
 
         $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
