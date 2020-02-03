@@ -3,6 +3,8 @@
 namespace Graphlr\Prepr;
 
 use GuzzleHttp\Client;
+use Cache;
+use Artisan;
 
 class Prepr
 {
@@ -15,9 +17,13 @@ class Prepr
     protected $rawResponse;
     protected $request;
     protected $authorization;
+    protected $cache;
+    protected $cacheTime;
 
     public function __construct()
     {
+        $this->cache = config('prepr.cache');
+        $this->cacheTime = config('prepr.cache_time');
         $this->baseUrl = config('prepr.url');
         $this->authorization = config('prepr.token');
     }
@@ -39,10 +45,25 @@ class Prepr
 
     protected function request($options = [])
     {
+        $url = $this->baseUrl.$this->path;
+
+        $cacheHash = null;
+        if($this->method == 'get' && $this->cache) {
+
+            $cacheHash = md5($url.$this->query);
+            if(Cache::has($cacheHash)) {
+
+                $data = Cache::get($cacheHash);
+
+                $this->request = data_get($data,'request');
+                $this->response = data_get($data,'response');
+
+                return $this;
+            }
+        }
+
         $this->client = $this->client();
 
-        $url = $this->baseUrl.$this->path;
-        
         $data = [
             'form_params' => $this->params
         ];
@@ -55,9 +76,16 @@ class Prepr
             
         $this->request = $this->client->request($this->method, $url.$this->query,$data);
 
-        $this->response = json_decode($this->request->getBody()->getContents(), true);
         $this->rawResponse = $this->request->getBody()->getContents();
+        $this->response = json_decode($this->rawResponse, true);
 
+        if($this->cache) {
+            $data = [
+                'request' => $this->request,
+                'response' => $this->response
+            ];
+            Cache::put($cacheHash, $data, $this->cacheTime);
+        }
         return $this;
     }
 
@@ -181,5 +209,10 @@ class Prepr
         }
 
         return $multipart;
+    }
+
+    public function clearCache()
+    {
+        return Artisan::call('cache:clear');
     }
 }
