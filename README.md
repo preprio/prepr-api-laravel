@@ -15,6 +15,8 @@ composer require graphlr/prepr-api-laravel
 ```text
 PREPR_URL=https://api.eu1.prepr.io/
 PREPR_TOKEN=ToKeN
+PREPR_CACHE=true
+PREPR_CACHE_TIME=1800
 ```
 
 #### Override variables
