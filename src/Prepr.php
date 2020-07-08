@@ -72,16 +72,18 @@ class Prepr
         
         if($this->method == 'post') {
 
-            if (data_get($this->file, 'chunks') > 1) {
+            if ($this->file) {
 
                 // Files larger then 25 MB (upload chunked)
-                $this->params['upload_phase'] = 'start';
-                $this->params['file_size'] = data_get($this->file, 'size');
-
-            } else {
+                if (data_get($this->file, 'chunks') > 1) {
+                    $this->params['upload_phase'] = 'start';
+                    $this->params['file_size'] = data_get($this->file, 'size');
 
                 // Files smaller then 25 MB (upload directly)
-                $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
+                } else {
+                    $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
+                }
+
             }
 
             $data = [
