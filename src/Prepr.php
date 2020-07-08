@@ -72,18 +72,16 @@ class Prepr
         
         if($this->method == 'post') {
 
-            if ($this->file) {
+            if (data_get($this->file, 'chunks') > 1) {
 
                 // Files larger then 25 MB (upload chunked)
-                if (data_get($this->file, 'chunks') > 1) {
-                    $this->params['upload_phase'] = 'start';
-                    $this->params['file_size'] = data_get($this->file, 'size');
+                $this->params['upload_phase'] = 'start';
+                $this->params['file_size'] = data_get($this->file, 'size');
 
-                    // Files smaller then 25 MB (upload directly)
-                } else {
-                    $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
-                }
+            } else {
 
+                // Files smaller then 25 MB (upload directly)
+                $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
             }
 
             $data = [
@@ -98,10 +96,8 @@ class Prepr
 
 
         // Files larger then 25 MB (upload chunked)
-        if ($this->file && $this->getStatusCode() === 201) {
-            if (data_get($this->file, 'chunks') > 1) {
-                return $this->processFileUpload();
-            }
+        if (data_get($this->file, 'chunks') > 1 && $this->getStatusCode() === 201) {
+            return $this->processFileUpload();
         } else {
             return $this;
         }
