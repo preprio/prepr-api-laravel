@@ -19,6 +19,8 @@ class Prepr
     protected $authorization;
     protected $cache;
     protected $cacheTime;
+    protected $file = null;
+    protected $chunkSize = 26214400;
 
     public function __construct()
     {
@@ -69,6 +71,21 @@ class Prepr
         ];
         
         if($this->method == 'post') {
+
+            if ($this->file) {
+
+                // Files larger then 25 MB (upload chunked)
+                if (data_get($this->file, 'chunks') > 1) {
+                    $this->params['upload_phase'] = 'start';
+                    $this->params['file_size'] = data_get($this->file, 'size');
+
+                    // Files smaller then 25 MB (upload directly)
+                } else {
+                    $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
+                }
+
+            }
+
             $data = [
                 'multipart' => $this->nestedArrayToMultipart($this->params)
             ];
@@ -78,6 +95,14 @@ class Prepr
 
         $this->rawResponse = $this->request->getBody()->getContents();
         $this->response = json_decode($this->rawResponse, true);
+
+
+        // Files larger then 25 MB (upload chunked)
+        if ($this->file) {
+            if (data_get($this->file, 'chunks') > 1) {
+                return $this->processFileUpload();
+            }
+        }
 
         if($this->cache) {
             $data = [
@@ -175,6 +200,56 @@ class Prepr
     public function getStatusCode()
     {
         return $this->request->getStatusCode();
+    }
+
+    public function file($queryKey, $filepath)
+    {
+        $fileSize = filesize($filepath);
+        $file = fopen($filepath, 'r');
+
+        $this->file = [
+            'query_key' => $queryKey,
+            'path' => $filepath,
+            'size' => $fileSize,
+            'file' => $file,
+            'chunks' => ($fileSize / $this->chunkSize),
+            'original_name' => basename($filepath),
+        ];
+
+        return $this;
+    }
+
+    private function processFileUpload(){
+        $id = data_get($this->response, 'id');
+        $fileSize = data_get($this->file, 'size');
+
+        for ($i = 0; $i <= data_get($this->file, 'chunks'); $i++) {
+
+            $offset = ($this->chunkSize * $i);
+            $endOfFile = ( ($offset + $this->chunkSize) > $fileSize ? true : false );
+
+            $original = \GuzzleHttp\Psr7\stream_for(data_get($this->file, 'file'));
+            $stream = new \GuzzleHttp\Psr7\LimitStream($original, ($endOfFile ? ($fileSize - $offset) : $this->chunkSize ), $offset);
+
+            $prepr = (new Prepr())
+                ->path('assets/{id}/multipart', [
+                    'id' => $id,
+                ])
+                ->params([
+                    'upload_phase' => 'transfer',
+                    'file_chunk' => $stream
+                ])
+                ->post();
+        }
+
+        return (new Prepr())
+            ->path('assets/{id}/multipart', [
+                'id' => $id,
+            ])
+            ->params([
+                'upload_phase' => 'finish'
+            ])
+            ->post();
     }
 
     public function nestedArrayToMultipart($array)
