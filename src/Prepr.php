@@ -98,10 +98,12 @@ class Prepr
 
 
         // Files larger then 25 MB (upload chunked)
-        if ($this->file) {
+        if ($this->file && $this->getStatusCode() === 201) {
             if (data_get($this->file, 'chunks') > 1) {
                 return $this->processFileUpload();
             }
+        } else {
+            return $this;
         }
 
         if($this->cache) {
