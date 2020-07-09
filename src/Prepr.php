@@ -68,21 +68,6 @@ class Prepr
         ];
 
         if ($this->method == 'post') {
-
-            if ($this->file) {
-
-                // Files larger then 25 MB (upload chunked)
-                if (data_get($this->file, 'chunks') > 1) {
-                    data_set($this->params, 'upload_phase', 'start');
-                    data_set($this->params, 'file_size', data_get($this->file, 'size'));
-
-                    // Files smaller then 25 MB (upload directly)
-                } else {
-                    data_set($this->params, 'source', data_get($this->file, 'file'));
-                }
-
-            }
-
             $data = [
                 'multipart' => $this->nestedArrayToMultipart($this->params),
             ];
@@ -211,6 +196,20 @@ class Prepr
             'chunks' => ($fileSize / $this->chunkSize),
             'original_name' => basename($filepath),
         ];
+
+        if ($this->file) {
+
+            // Files larger then 25 MB (upload chunked)
+            if (data_get($this->file, 'chunks') > 1) {
+                data_set($this->params, 'upload_phase', 'start');
+                data_set($this->params, 'file_size', data_get($this->file, 'size'));
+
+                // Files smaller then 25 MB (upload directly)
+            } else {
+                data_set($this->params, 'source', data_get($this->file, 'file'));
+            }
+
+        }
 
         return $this;
     }
