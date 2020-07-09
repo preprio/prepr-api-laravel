@@ -104,13 +104,30 @@ if($apiRequest->getStatusCode() == 200) {
 $apiRequest = (new Prepr)
     ->path('tags/{id}',[
         'id' => 1
-    ]),
+    ])
     ->delete();
 
 if($apiRequest->getStatusCode() == 204) {
     // Deleted.
 }
 ```
+
+##### Multipart/Chunk upload
+
+```php
+$apiRequest = (new Prepr)
+    ->path('assets')
+    ->params([
+      'body' => 'Example',
+    ])
+    ->file('/path/to/file.txt') // For laravel storage: storage_path('app/file.ext')
+    ->post();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
 
 #### Debug
 
