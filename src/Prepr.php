@@ -233,6 +233,10 @@ class Prepr
                 'upload_phase' => 'transfer',
                 'file_chunk' => $stream,
             ])->post();
+
+            if ($prepr->getStatusCode() !== 200) {
+                return $prepr;
+            }
         }
 
         return (new Prepr())->path('assets/{id}/multipart', [
