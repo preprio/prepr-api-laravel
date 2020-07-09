@@ -34,31 +34,28 @@ class Prepr
     {
         return new Client([
             'http_errors' => false,
-            'headers' => array_merge(
-                config('prepr.headers'),
-                [
+            'headers' => array_merge(config('prepr.headers'), [
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'Authorization' => $this->authorization
-                ]
-            )
+                    'Authorization' => $this->authorization,
+                ]),
         ]);
     }
 
     protected function request($options = [])
     {
-        $url = $this->baseUrl.$this->path;
+        $url = $this->baseUrl . $this->path;
 
         $cacheHash = null;
-        if($this->method == 'get' && $this->cache) {
+        if ($this->method == 'get' && $this->cache) {
 
-            $cacheHash = md5($url.$this->authorization.$this->query);
-            if(Cache::has($cacheHash)) {
+            $cacheHash = md5($url . $this->authorization . $this->query);
+            if (Cache::has($cacheHash)) {
 
                 $data = Cache::get($cacheHash);
 
-                $this->request = data_get($data,'request');
-                $this->response = data_get($data,'response');
+                $this->request = data_get($data, 'request');
+                $this->response = data_get($data, 'response');
 
                 return $this;
             }
@@ -67,10 +64,10 @@ class Prepr
         $this->client = $this->client();
 
         $data = [
-            'form_params' => $this->params
+            'form_params' => $this->params,
         ];
-        
-        if($this->method == 'post') {
+
+        if ($this->method == 'post') {
 
             if ($this->file) {
 
@@ -79,7 +76,7 @@ class Prepr
                     $this->params['upload_phase'] = 'start';
                     $this->params['file_size'] = data_get($this->file, 'size');
 
-                // Files smaller then 25 MB (upload directly)
+                    // Files smaller then 25 MB (upload directly)
                 } else {
                     $this->params[data_get($this->file, 'query_key')] = data_get($this->file, 'file');
                 }
@@ -87,11 +84,11 @@ class Prepr
             }
 
             $data = [
-                'multipart' => $this->nestedArrayToMultipart($this->params)
+                'multipart' => $this->nestedArrayToMultipart($this->params),
             ];
         }
-            
-        $this->request = $this->client->request($this->method, $url.$this->query,$data);
+
+        $this->request = $this->client->request($this->method, $url . $this->query, $data);
 
         $this->rawResponse = $this->request->getBody()->getContents();
         $this->response = json_decode($this->rawResponse, true);
@@ -104,13 +101,14 @@ class Prepr
             return $this;
         }
 
-        if($this->cache) {
+        if ($this->cache) {
             $data = [
                 'request' => $this->request,
-                'response' => $this->response
+                'response' => $this->response,
             ];
             Cache::put($cacheHash, $data, $this->cacheTime);
         }
+
         return $this;
     }
 
@@ -121,7 +119,8 @@ class Prepr
         return $this;
     }
 
-    public function url($url) {
+    public function url($url)
+    {
         $this->baseUrl = $url;
 
         return $this;
@@ -157,7 +156,7 @@ class Prepr
 
     public function path($path = null, array $array = [])
     {
-        foreach($array as $key => $value) {
+        foreach ($array as $key => $value) {
             $path = str_replace('{' . $key . '}', $value, $path);
         }
 
@@ -175,7 +174,7 @@ class Prepr
 
     public function query(array $array)
     {
-        $this->query = '?'.http_build_query($array);
+        $this->query = '?' . http_build_query($array);
 
         return $this;
     }
@@ -219,37 +218,32 @@ class Prepr
         return $this;
     }
 
-    private function processFileUpload(){
+    private function processFileUpload()
+    {
         $id = data_get($this->response, 'id');
         $fileSize = data_get($this->file, 'size');
 
         for ($i = 0; $i <= data_get($this->file, 'chunks'); $i++) {
 
             $offset = ($this->chunkSize * $i);
-            $endOfFile = ( ($offset + $this->chunkSize) > $fileSize ? true : false );
+            $endOfFile = (($offset + $this->chunkSize) > $fileSize ? true : false);
 
             $original = \GuzzleHttp\Psr7\stream_for(data_get($this->file, 'file'));
-            $stream = new \GuzzleHttp\Psr7\LimitStream($original, ($endOfFile ? ($fileSize - $offset) : $this->chunkSize ), $offset);
+            $stream = new \GuzzleHttp\Psr7\LimitStream($original, ($endOfFile ? ($fileSize - $offset) : $this->chunkSize), $offset);
 
-            $prepr = (new Prepr())
-                ->path('assets/{id}/multipart', [
+            $prepr = (new Prepr())->path('assets/{id}/multipart', [
                     'id' => $id,
-                ])
-                ->params([
+                ])->params([
                     'upload_phase' => 'transfer',
-                    'file_chunk' => $stream
-                ])
-                ->post();
+                    'file_chunk' => $stream,
+                ])->post();
         }
 
-        return (new Prepr())
-            ->path('assets/{id}/multipart', [
+        return (new Prepr())->path('assets/{id}/multipart', [
                 'id' => $id,
-            ])
-            ->params([
-                'upload_phase' => 'finish'
-            ])
-            ->post();
+            ])->params([
+                'upload_phase' => 'finish',
+            ])->post();
     }
 
     public function nestedArrayToMultipart($array)
@@ -270,6 +264,7 @@ class Prepr
                     $output[$new_key] = $value;
                 }
             }
+
             return $output;
         };
 
@@ -279,7 +274,7 @@ class Prepr
         foreach ($flat_array as $key => $value) {
             $multipart[] = [
                 'name' => $key,
-                'contents' => $value
+                'contents' => $value,
             ];
         }
 
