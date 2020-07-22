@@ -229,10 +229,10 @@ class Prepr
 
             $prepr = (new Prepr())->path('assets/{id}/multipart', [
                 'id' => $id,
-            ])->params([
+            ])->params(array_merge($this->params, [
                 'upload_phase' => 'transfer',
                 'file_chunk' => $stream,
-            ])->post();
+            ]))->post();
 
             if ($prepr->getStatusCode() !== 200) {
                 return $prepr;
@@ -241,9 +241,9 @@ class Prepr
 
         return (new Prepr())->path('assets/{id}/multipart', [
             'id' => $id,
-        ])->params([
+        ])->params(array_merge($this->params, [
             'upload_phase' => 'finish',
-        ])->post();
+        ]))->post();
     }
 
     public function nestedArrayToMultipart($array)
