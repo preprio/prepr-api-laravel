@@ -227,15 +227,14 @@ class Prepr
             $original = \GuzzleHttp\Psr7\stream_for(data_get($this->file, 'file'));
             $stream = new \GuzzleHttp\Psr7\LimitStream($original, ($endOfFile ? ($fileSize - $offset) : $this->chunkSize), $offset);
 
-            $params = $this->params;
-            data_set($params, 'upload_phase', 'transfer');
-            data_set($params, 'file_chunk', $stream);
+            data_set($this->params, 'upload_phase', 'transfer');
+            data_set($this->params, 'file_chunk', $stream);
 
             $prepr = (new Prepr())
                 ->path('assets/{id}/multipart', [
                     'id' => $id,
                 ])
-                ->params($params)
+                ->params($this->params)
                 ->post();
 
             if ($prepr->getStatusCode() !== 200) {
@@ -243,14 +242,13 @@ class Prepr
             }
         }
 
-        $params = $this->params;
-        data_set($params, 'upload_phase', 'finish');
+        data_set($this->params, 'upload_phase', 'finish');
 
         return (new Prepr())
             ->path('assets/{id}/multipart', [
                 'id' => $id,
             ])
-            ->params($params)
+            ->params($this->params)
             ->post();
     }
 
