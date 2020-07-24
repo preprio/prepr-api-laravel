@@ -227,23 +227,31 @@ class Prepr
             $original = \GuzzleHttp\Psr7\stream_for(data_get($this->file, 'file'));
             $stream = new \GuzzleHttp\Psr7\LimitStream($original, ($endOfFile ? ($fileSize - $offset) : $this->chunkSize), $offset);
 
-            $prepr = (new Prepr())->path('assets/{id}/multipart', [
-                'id' => $id,
-            ])->params(array_merge($this->params, [
-                'upload_phase' => 'transfer',
-                'file_chunk' => $stream,
-            ]))->post();
+            $params = $this->params;
+            data_set($params, 'upload_phase', 'transfer');
+            data_set($params, 'file_chunk', $stream);
+
+            $prepr = (new Prepr())
+                ->path('assets/{id}/multipart', [
+                    'id' => $id,
+                ])
+                ->params($params)
+                ->post();
 
             if ($prepr->getStatusCode() !== 200) {
                 return $prepr;
             }
         }
 
-        return (new Prepr())->path('assets/{id}/multipart', [
-            'id' => $id,
-        ])->params(array_merge($this->params, [
-            'upload_phase' => 'finish',
-        ]))->post();
+        $params = $this->params;
+        data_set($params, 'upload_phase', 'finish');
+
+        return (new Prepr())
+            ->path('assets/{id}/multipart', [
+                'id' => $id,
+            ])
+            ->params($params)
+            ->post();
     }
 
     public function nestedArrayToMultipart($array)
