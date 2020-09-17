@@ -252,6 +252,57 @@ class Prepr
             ->post();
     }
 
+    public function autoPaging()
+    {
+        $this->method = 'get';
+
+        $perPage = 10;
+        $page = 0;
+
+        $arrayItems = [];
+
+        while(true) {
+
+            $query = $this->query;
+
+            data_set($query,'limit',$perPage);
+            data_set($query,'offset',$page*$perPage);
+
+            dump($query);
+
+            $result = (new Prepr())
+                ->path($this->path)
+                ->query($query)
+                ->get();
+
+            if($result->getStatusCode() == 200) {
+
+                $items = data_get($result->getResponse(),'items');
+                if($items) {
+                    foreach($items as $item) {
+
+                        $arrayItems[] = $item;
+                    }
+
+                    $page++;
+                    continue;
+
+                } else {
+
+                    break;
+
+                }
+            }
+        }
+
+
+        $this->response = $arrayItems;
+
+//        return;
+
+        return $this;
+    }
+
     public function nestedArrayToMultipart($array)
     {
         $flatten = function ($array, $original_key = '') use (&$flatten) {
