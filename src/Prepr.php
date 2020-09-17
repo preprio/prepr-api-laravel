@@ -20,6 +20,7 @@ class Prepr
     protected $cache;
     protected $cacheTime;
     protected $file = null;
+    protected $statusCode;
     private $chunkSize = 26214400;
 
     public function __construct()
@@ -181,6 +182,9 @@ class Prepr
 
     public function getStatusCode()
     {
+        if($this->statusCode) {
+            return $this->statusCode;
+        }
         return $this->request->getStatusCode();
     }
 
@@ -268,8 +272,6 @@ class Prepr
             data_set($query,'limit',$perPage);
             data_set($query,'offset',$page*$perPage);
 
-            dump($query);
-
             $result = (new Prepr())
                 ->path($this->path)
                 ->query($query)
@@ -279,26 +281,29 @@ class Prepr
 
                 $items = data_get($result->getResponse(),'items');
                 if($items) {
+
                     foreach($items as $item) {
 
                         $arrayItems[] = $item;
                     }
 
-                    $page++;
-                    continue;
+                    if(count($items) == $perPage) {
+                        $page++;
+                        continue;
+                    } else {
+                        break;
+                    }
 
                 } else {
-
                     break;
-
                 }
+            } else {
+                return $result;
             }
         }
 
-
         $this->response = $arrayItems;
-
-//        return;
+        $this->statusCode = 200;
 
         return $this;
     }
