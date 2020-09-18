@@ -128,6 +128,21 @@ if($apiRequest->getStatusCode() == 200) {
 }
 ```
 
+##### Autopaging
+
+```php
+$apiRequest = (new Prepr)
+    ->path('publications')
+    ->query([
+        'limit' => 200 // optional
+    ])
+    ->autoPaging();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
 
 #### Debug
 

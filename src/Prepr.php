@@ -11,6 +11,7 @@ class Prepr
     protected $baseUrl;
     protected $path;
     protected $query;
+    protected $rawQuery;
     protected $method;
     protected $params = [];
     protected $response;
@@ -158,6 +159,7 @@ class Prepr
 
     public function query(array $array)
     {
+        $this->rawQuery = $array;
         $this->query = '?' . http_build_query($array);
 
         return $this;
@@ -235,6 +237,7 @@ class Prepr
             data_set($this->params, 'file_chunk', $stream);
 
             $prepr = (new Prepr())
+                ->authorization($this->authorization)
                 ->path('assets/{id}/multipart', [
                     'id' => $id,
                 ])
@@ -249,6 +252,7 @@ class Prepr
         data_set($this->params, 'upload_phase', 'finish');
 
         return (new Prepr())
+            ->authorization($this->authorization)
             ->path('assets/{id}/multipart', [
                 'id' => $id,
             ])
@@ -256,23 +260,28 @@ class Prepr
             ->post();
     }
 
-    public function autoPaging()
+    public function autoPaging($perPage = 100)
     {
         $this->method = 'get';
 
-        $perPage = 10;
         $page = 0;
+        $queryLimit = data_get($this->rawQuery, 'limit');
 
         $arrayItems = [];
 
         while(true) {
 
+            if (count($arrayItems) >= $queryLimit) {
+                break;
+            }
+
             $query = $this->query;
 
-            data_set($query,'limit',$perPage);
+            data_set($query,'limit', $perPage);
             data_set($query,'offset',$page*$perPage);
 
             $result = (new Prepr())
+                ->authorization($this->authorization)
                 ->path($this->path)
                 ->query($query)
                 ->get();
@@ -302,7 +311,7 @@ class Prepr
             }
         }
 
-        $this->response = $arrayItems;
+        $this->response = ['items' => $arrayItems, 'total' => count($arrayItems)];
         $this->statusCode = 200;
 
         return $this;
