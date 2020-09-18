@@ -260,20 +260,17 @@ class Prepr
             ->post();
     }
 
-    public function autoPaging($perPage = 100)
+    public function autoPaging()
     {
         $this->method = 'get';
 
+        $perPage = 100;
         $page = 0;
         $queryLimit = data_get($this->rawQuery, 'limit');
 
         $arrayItems = [];
 
         while(true) {
-
-            if (count($arrayItems) >= $queryLimit) {
-                break;
-            }
 
             $query = $this->query;
 
@@ -292,8 +289,11 @@ class Prepr
                 if($items) {
 
                     foreach($items as $item) {
-
                         $arrayItems[] = $item;
+
+                        if (count($arrayItems) == $queryLimit) {
+                            break;
+                        }
                     }
 
                     if(count($items) == $perPage) {
@@ -311,7 +311,10 @@ class Prepr
             }
         }
 
-        $this->response = ['items' => $arrayItems, 'total' => count($arrayItems)];
+        $this->response = [
+            'items' => $arrayItems,
+            'total' => count($arrayItems)
+        ];
         $this->statusCode = 200;
 
         return $this;
