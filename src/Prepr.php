@@ -260,11 +260,10 @@ class Prepr
             ->post();
     }
 
-    public function autoPaging()
+    public function autoPaging($perPage = 100)
     {
         $this->method = 'get';
 
-        $perPage = 100;
         $page = 0;
         $queryLimit = data_get($this->rawQuery, 'limit');
 
