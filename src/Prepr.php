@@ -264,8 +264,8 @@ class Prepr
     {
         $this->method = 'get';
 
-        $page = 0;
         $perPage = 100;
+        $page = 0;
         $queryLimit = data_get($this->rawQuery, 'limit');
 
         $arrayItems = [];
