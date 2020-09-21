@@ -11,6 +11,7 @@ class Prepr
     protected $baseUrl;
     protected $path;
     protected $query;
+    protected $rawQuery;
     protected $method;
     protected $params = [];
     protected $response;
@@ -20,6 +21,7 @@ class Prepr
     protected $cache;
     protected $cacheTime;
     protected $file = null;
+    protected $statusCode;
     private $chunkSize = 26214400;
 
     public function __construct()
@@ -157,6 +159,7 @@ class Prepr
 
     public function query(array $array)
     {
+        $this->rawQuery = $array;
         $this->query = '?' . http_build_query($array);
 
         return $this;
@@ -181,6 +184,9 @@ class Prepr
 
     public function getStatusCode()
     {
+        if($this->statusCode) {
+            return $this->statusCode;
+        }
         return $this->request->getStatusCode();
     }
 
@@ -231,6 +237,7 @@ class Prepr
             data_set($this->params, 'file_chunk', $stream);
 
             $prepr = (new Prepr())
+                ->authorization($this->authorization)
                 ->path('assets/{id}/multipart', [
                     'id' => $id,
                 ])
@@ -245,11 +252,72 @@ class Prepr
         data_set($this->params, 'upload_phase', 'finish');
 
         return (new Prepr())
+            ->authorization($this->authorization)
             ->path('assets/{id}/multipart', [
                 'id' => $id,
             ])
             ->params($this->params)
             ->post();
+    }
+
+    public function autoPaging()
+    {
+        $this->method = 'get';
+
+        $perPage = 100;
+        $page = 0;
+        $queryLimit = data_get($this->rawQuery, 'limit');
+
+        $arrayItems = [];
+
+        while(true) {
+
+            $query = $this->query;
+
+            data_set($query,'limit', $perPage);
+            data_set($query,'offset',$page*$perPage);
+
+            $result = (new Prepr())
+                ->authorization($this->authorization)
+                ->path($this->path)
+                ->query($query)
+                ->get();
+
+            if($result->getStatusCode() == 200) {
+
+                $items = data_get($result->getResponse(),'items');
+                if($items) {
+
+                    foreach($items as $item) {
+                        $arrayItems[] = $item;
+
+                        if (count($arrayItems) == $queryLimit) {
+                            break;
+                        }
+                    }
+
+                    if(count($items) == $perPage) {
+                        $page++;
+                        continue;
+                    } else {
+                        break;
+                    }
+
+                } else {
+                    break;
+                }
+            } else {
+                return $result;
+            }
+        }
+
+        $this->response = [
+            'items' => $arrayItems,
+            'total' => count($arrayItems)
+        ];
+        $this->statusCode = 200;
+
+        return $this;
     }
 
     public function nestedArrayToMultipart($array)
