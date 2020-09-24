@@ -149,3 +149,8 @@ if($apiRequest->getStatusCode() == 200) {
 #### Debug
 
 For debug you can use `getRawResponse()`
+
+
+#### Documentation
+
+<a href="https://developers.prepr.io/docs">Prepr API documentation</a>
