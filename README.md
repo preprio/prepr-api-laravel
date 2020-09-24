@@ -153,4 +153,4 @@ For debug you can use `getRawResponse()`
 
 #### Documentation
 
-<a href="https://developers.prepr.io/docs">Prepr API documentation</a>
+<a href="https://developers.prepr.io/docs">For all the details and full documentation check out the Prepr Developer docs</a>
