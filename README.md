@@ -1,6 +1,6 @@
 # Laravel Prepr API Wrapper
 
-This Laravel package is a wrapper for the Prepr API.
+This Laravel package is a wrapper for the <a href="https://prepr.io">Prepr</a> API.
 
 Compatible with Laravel v5x, v6x, v7x, v8x.
 
