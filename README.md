@@ -115,7 +115,7 @@ if($apiRequest->getStatusCode() == 204) {
 ```
 
 ##### A/B testing custom userId
-Default is Laravel session is `session()->getId()`
+Default is Laravel session id `session()->getId()`
 
 ```php
 $apiRequest = (new Prepr)
