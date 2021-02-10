@@ -58,7 +58,7 @@ class Prepr
         $cacheHash = null;
         if ($this->method == 'get' && $this->cache) {
 
-            $cacheHash = md5($url . $this->authorization . $this->query);
+            $cacheHash = md5($url . $this->authorization . $this->userId . $this->query);
             if (Cache::has($cacheHash)) {
 
                 $data = Cache::get($cacheHash);
