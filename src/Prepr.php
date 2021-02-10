@@ -40,16 +40,14 @@ class Prepr
 
     protected function client()
     {
-        $headers = [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'Authorization' => $this->authorization,
-            'Prepr-ABTesting' => $this->userId
-        ];
-
         return new Client([
             'http_errors' => false,
-            'headers' => array_merge(config('prepr.headers'), $headers),
+            'headers' => array_merge(config('prepr.headers'), [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => $this->authorization,
+                'Prepr-ABTesting' => $this->userId
+            ])
         ]);
     }
 
