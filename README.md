@@ -114,6 +114,27 @@ if($apiRequest->getStatusCode() == 204) {
 }
 ```
 
+##### A/B testing custom userId
+Default is Laravel session is `session()->getId()`
+
+```php
+$apiRequest = (new Prepr)
+    ->path('tags/{id}',[
+        'id' => 1
+    ]),
+    ->query([
+        'fields' => 'example'
+    ])
+    ->userId(
+        'testUser'
+    )
+    ->get();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
 ##### Multipart/Chunk upload
 
 ```php
