@@ -5,6 +5,8 @@ namespace Graphlr\Prepr;
 use GuzzleHttp\Client;
 use Cache;
 use Artisan;
+use lastguest\Murmur;
+use Session;
 
 class Prepr
 {
@@ -22,6 +24,8 @@ class Prepr
     protected $cacheTime;
     protected $file = null;
     protected $statusCode;
+    protected $userId;
+
     private $chunkSize = 26214400;
 
     public function __construct()
@@ -40,7 +44,8 @@ class Prepr
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => $this->authorization,
-            ]),
+                'Prepr-ABTesting' => $this->userId
+            ])
         ]);
     }
 
@@ -51,7 +56,7 @@ class Prepr
         $cacheHash = null;
         if ($this->method == 'get' && $this->cache) {
 
-            $cacheHash = md5($url . $this->authorization . $this->query);
+            $cacheHash = md5($url . $this->authorization . $this->userId . $this->query);
             if (Cache::has($cacheHash)) {
 
                 $data = Cache::get($cacheHash);
@@ -316,6 +321,20 @@ class Prepr
             'total' => count($arrayItems)
         ];
         $this->statusCode = 200;
+
+        return $this;
+    }
+
+    public function hashUserId($userId)
+    {
+        $hashValue = Murmur::hash3_int($userId, 1);
+        $ratio = $hashValue / pow(2, 32);
+        return intval($ratio*10000);
+    }
+
+    public function userId($userId)
+    {
+        $this->userId = $this->hashUserId($userId);
 
         return $this;
     }

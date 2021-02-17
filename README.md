@@ -114,6 +114,24 @@ if($apiRequest->getStatusCode() == 204) {
 }
 ```
 
+##### A/B testing
+
+```php
+$apiRequest = (new Prepr)
+    ->path('tags/{id}',[
+        'id' => 1
+    ]),
+    ->query([
+        'fields' => 'example'
+    ])
+    ->userId(session()->getId())
+    ->get();
+
+if($apiRequest->getStatusCode() == 200) {
+    dump($apiRequest->getResponse());
+}
+```
+
 ##### Multipart/Chunk upload
 
 ```php
