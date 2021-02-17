@@ -34,8 +34,6 @@ class Prepr
         $this->cacheTime = config('prepr.cache_time');
         $this->baseUrl = config('prepr.url');
         $this->authorization = config('prepr.token');
-
-        $this->userId = $this->hashUserId(session()->getId());
     }
 
     protected function client()
